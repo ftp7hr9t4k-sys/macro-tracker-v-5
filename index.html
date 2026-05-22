@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>⚫ Macro Tracker V6 | Clean B&W</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background: #ffffff;
+      color: #1e1e1e;
+      padding: 1.5rem 1rem;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+
+    /* Typography */
+    h1 {
+      font-size: 1.8rem;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+      color: #000000;
+      margin-bottom: 0.25rem;
+    }
+
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 500;
+      margin-bottom: 0.75rem;
+      color: #111;
+    }
+
+    .subhead {
+      color: #4a4a4a;
+      margin-bottom: 1rem;
+      border-left: 2px solid #ccc;
+      padding-left: 0.75rem;
+    }
+
+    /* Cards – clean white with subtle border */
+    .card {
+      background: #ffffff;
+      border: 1px solid #e5e5e5;
+      border-radius: 20px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.2rem 0;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 2px 6px rgba(0,0,0,0.02);
+      transition: box-shadow 0.1s ease;
+    }
+
+    /* Flex utilities */
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      align-items: center;
+    }
+
+    /* Inputs & Buttons – black/white theme */
+    input, button {
+      padding: 10px 16px;
+      border-radius: 40px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      font-family: inherit;
+      transition: all 0.15s ease;
+    }
+
+    input {
+      background: #f9f9f9;
+      border: 1px solid #cccccc;
+      color: #111;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #666666;
+      background: #ffffff;
+    }
+
+    button {
+      background: #000000;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #333333;
+      color: #111111;
+    }
+
+    .btn-outline:hover {
+      background: #f2f2f2;
+    }
+
+    .btn-danger {
+      background: #b91c1c;
+      color: white;
+      border: none;
+    }
+
+    .btn-secondary {
+      background: #f0f0f0;
+      color: #111;
+      border: 1px solid #ccc;
+    }
+
+    /* Macro grid */
+    .macro-grid {
+      display: flex;
+      gap: 1rem;
+      margin: 1rem 0;
+      flex-wrap: wrap;
+    }
+
+    .macro-card {
+      background: #fafafc;
+      border: 1px solid #ececec;
+      flex: 1;
+      padding: 0.8rem;
+      border-radius: 20px;
+      text-align: center;
+    }
+
+    .macro-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #000000;
+      line-height: 1.2;
+    }
+
+    .status {
+      background: #f5f5f7;
+      padding: 0.65rem;
+      border-radius: 40px;
+      font-size: 0.85rem;
+      color: #2c2c2c;
+      margin: 10px 0 0;
+      border-left: 3px solid #aaaaaa;
+    }
+
+    .badge {
+      background: #efefef;
+      color: #1f1f1f;
+      display: inline-block;
+      padding: 4px 14px;
+      border-radius: 30px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    hr {
+      margin: 0.8rem 0;
+      border: none;
+      border-top: 1px solid #eaeaea;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    #syncStatus {
+      font-size: 0.7rem;
+      color: #555;
+      margin-top: 8px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #777;
+      margin-top: 2rem;
+      border-top: 1px solid #eee;
+      padding-top: 1rem;
+    }
+
+    /* small tweaks */
+    .inline-icon {
+      font-weight: normal;
+    }
+    button:disabled {
+      opacity: 0.5;
+      transform: none;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>⚫ MACRO TRACKER V6</h1>
+  <div class="subhead">lean bulk · local + cloud sync · clean B&W</div>
+
+  <!-- AUTH & SYNC PANEL -->
+  <div class="card">
+    <div class="user-info">
+      <span>👤 <span id="authDisplay">Offline mode</span></span>
+      <div class="flex-row">
+        <button id="anonLoginBtn" class="btn-outline">🔓 Anonymous</button>
+        <button id="googleLoginBtn" class="btn-outline">🌐 Google</button>
+        <button id="logoutBtn" class="btn-outline">🚪 Logout</button>
+      </div>
+    </div>
+    <div id="syncStatus">⚡ Cloud sync ready after login</div>
+    <div class="flex-row" style="margin-top: 12px;">
+      <button id="manualSyncBtn" class="btn-secondary">☁️ Pull from cloud</button>
+      <button id="pushToCloudBtn" class="btn-secondary">📤 Push to cloud</button>
+    </div>
+  </div>
+
+  <!-- LOCAL PROFILE -->
+  <div class="card">
+    <h3>📛 Local profile</h3>
+    <div class="flex-row">
+      <input id="localNameInput" placeholder="e.g., Alex, Sarah" autocomplete="off">
+      <button id="setLocalUserBtn">Set profile</button>
+    </div>
+    <p class="badge" id="localUserDisplay" style="margin-top: 8px;">No active local user</p>
+  </div>
+
+  <!-- FOOD LOGGER -->
+  <div class="card">
+    <h3>🍽️ Log meal</h3>
+    <div class="flex-row">
+      <input id="foodInput" placeholder="e.g., chicken breast, oats" style="flex:2;">
+      <input id="gramsInput" type="number" value="100" step="10" style="width: 90px;">
+      <span>g</span>
+    </div>
+    <button id="searchFoodBtn" style="margin-top: 8px;">➕ Add & scale macros</button>
+    <div id="foodResult" class="badge" style="margin-top: 8px; display: inline-block;"></div>
+  </div>
+
+  <!-- TODAY'S TOTALS -->
+  <div class="card">
+    <h3>📅 Today's totals</h3>
+    <div class="macro-grid">
+      <div class="macro-card"><div>🥩 PROTEIN</div><div class="macro-value"><span id="proteinVal">0</span>g</div></div>
+      <div class="macro-card"><div>🍚 CARBS</div><div class="macro-value"><span id="carbsVal">0</span>g</div></div>
+      <div class="macro-card"><div>🔥 CALORIES</div><div class="macro-value"><span id="caloriesVal">0</span></div></div>
+    </div>
+    <div id="statusMsg" class="status">⚙️ Set a local profile to start tracking</div>
+    <hr>
+    <div class="flex-row">
+      <button id="resetTodayBtn" class="btn-danger">🔄 Reset today's macros</button>
+    </div>
+  </div>
+  <footer>🥗 Food data from OpenFoodFacts (per 100g → scaled) • Firebase optional</footer>
+</div>
+
+<script type="module">
+  // ----------------------------- FIREBASE IMPORTS (same functionality, only style changed) -------------------------
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInAnonymously, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ========== 🔧 REPLACE WITH YOUR FIREBASE CONFIG (if you want cloud sync) ==========
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",           // <-- replace for cloud sync
+    authDomain: "YOUR_PROJECT.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT.appspot.com",
+    messagingSenderId: "123456789",
+    appId: "1:123456789:web:abcdef"
+  };
+  // ====================================================================================
+
+  let app, auth, db, syncUnsubscribe = null;
+  let currentFirebaseUser = null;
+  let cloudReady = false;
+
+  // ---------- LOCAL STORAGE ----------
+  let macroData = JSON.parse(localStorage.getItem("macroData_v6")) || {};
+  let activeLocalUser = localStorage.getItem("activeLocalUser_v6") || "";
+
+  // DOM elements
+  const proteinSpan = document.getElementById("proteinVal");
+  const carbsSpan = document.getElementById("carbsVal");
+  const caloriesSpan = document.getElementById("caloriesVal");
+  const statusDiv = document.getElementById("statusMsg");
+  const authDisplaySpan = document.getElementById("authDisplay");
+  const localUserDisplaySpan = document.getElementById("localUserDisplay");
+  const foodResultDiv = document.getElementById("foodResult");
+  const syncStatusDiv = document.getElementById("syncStatus");
+
+  function ensureLocalUser(userKey) {
+    if (!userKey) return false;
+    if (!macroData[userKey]) {
+      macroData[userKey] = { protein: 0, carbs: 0, calories: 0 };
+      saveLocalData();
+    }
+    return true;
+  }
+
+  function saveLocalData() {
+    localStorage.setItem("macroData_v6", JSON.stringify(macroData));
+  }
+
+  function updateUI() {
+    if (!activeLocalUser) {
+      proteinSpan.innerText = "0";
+      carbsSpan.innerText = "0";
+      caloriesSpan.innerText = "0";
+      statusDiv.innerHTML = "⚠️ Please set a local profile name (top card)";
+      localUserDisplaySpan.innerText = "No local user";
+      return;
+    }
+    ensureLocalUser(activeLocalUser);
+    const data = macroData[activeLocalUser];
+    proteinSpan.innerText = Math.floor(data.protein);
+    carbsSpan.innerText = Math.floor(data.carbs);
+    caloriesSpan.innerText = Math.floor(data.calories);
+    localUserDisplaySpan.innerText = `📁 ${activeLocalUser}`;
+
+    const protein = data.protein;
+    let fb = "";
+    if (protein < 140) fb = "🔴 Low protein (muscle risk)";
+    else if (protein < 165) fb = "🟡 Almost target protein";
+    else fb = "🟢 Excellent protein!";
+    if (data.calories < 1800 && protein > 50) fb += " | ⚡ Calories low for bulk";
+    else if (data.calories > 2800) fb += " | 🔥 Strong surplus";
+    statusDiv.innerHTML = fb;
+  }
+
+  function setActiveUser(userKey) {
+    if (!userKey) return;
+    activeLocalUser = userKey;
+    localStorage.setItem("activeLocalUser_v6", activeLocalUser);
+    ensureLocalUser(activeLocalUser);
+    updateUI();
+  }
+
+  function addMacrosToActive(proteinAdd, carbsAdd, caloriesAdd) {
+    if (!activeLocalUser) {
+      foodResultDiv.innerHTML = "❌ No active local user. Set profile name first.";
+      return false;
+    }
+    ensureLocalUser(activeLocalUser);
+    const user = macroData[activeLocalUser];
+    user.protein += Math.max(0, proteinAdd);
+    user.carbs += Math.max(0, carbsAdd);
+    user.calories += Math.max(0, caloriesAdd);
+    saveLocalData();
+    updateUI();
+    return true;
+  }
+
+  function resetToday() {
+    if (!activeLocalUser) { foodResultDiv.innerHTML = "⚠️ No active user to reset."; return; }
+    macroData[activeLocalUser] = { protein: 0, carbs: 0, calories: 0 };
+    saveLocalData();
+    updateUI();
+    foodResultDiv.innerHTML = "🗑️ Today's macros reset.";
+    setTimeout(() => { if(foodResultDiv.innerHTML.includes("reset")) foodResultDiv.innerHTML = ""; }, 2000);
+  }
+
+  // ---------- OPENFOODFACTS SEARCH ----------
+  async function searchAndAddFood() {
+    const query = document.getElementById("foodInput").value.trim();
+    const grams = parseFloat(document.getElementById("gramsInput").value);
+    if (!activeLocalUser) { foodResultDiv.innerHTML = "❗ Set local profile first."; return; }
+    if (!query) { foodResultDiv.innerHTML = "📝 Enter a food name."; return; }
+    if (isNaN(grams) || grams <= 0 || grams > 3000) { foodResultDiv.innerHTML = "⚖️ Valid grams (10-3000)."; return; }
+
+    foodResultDiv.innerHTML = "🔍 Searching...";
+    try {
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(query)}&search_simple=1&action=process&json=1&page_size=3`;
+      const res = await fetch(url);
+      const data = await res.json();
+      if (!data.products || data.products.length === 0) throw new Error("not found");
+      const product = data.products[0];
+      const n = product.nutriments || {};
+      let proteinPer100 = n.proteins_100g || n.proteins || 0;
+      let carbsPer100 = n.carbohydrates_100g || n.carbohydrates || 0;
+      let kcalPer100 = n.energy_kcal_100g || n.energy_kcal || (n.energy ? n.energy / 4.184 : 0);
+      proteinPer100 = Math.max(0, proteinPer100);
+      carbsPer100 = Math.max(0, carbsPer100);
+      kcalPer100 = Math.max(0, kcalPer100);
+      const factor = grams / 100;
+      const addedP = proteinPer100 * factor;
+      const addedC = carbsPer100 * factor;
+      const addedKcal = kcalPer100 * factor;
+      addMacrosToActive(addedP, addedC, addedKcal);
+      const name = product.product_name || query;
+      foodResultDiv.innerHTML = `✅ ${name} (${grams}g): +${Math.round(addedP)}g P, +${Math.round(addedC)}g C, +${Math.round(addedKcal)} kcal`;
+      document.getElementById("foodInput").value = "";
+      document.getElementById("gramsInput").value = "100";
+    } catch (err) {
+      foodResultDiv.innerHTML = "❌ Food not found or API error. Try 'chicken', 'rice'.";
+    }
+  }
+
+  // ------------------------- CLOUD SYNC -------------------------
+  async function pushLocalToCloud() {
+    if (!currentFirebaseUser || !activeLocalUser) {
+      syncStatusDiv.innerText = "⚠️ Need both firebase login AND local user to push.";
+      return;
+    }
+    const localData = macroData[activeLocalUser];
+    if (!localData) return;
+    try {
+      const userDocRef = doc(db, "macroUsers", currentFirebaseUser.uid);
+      await setDoc(userDocRef, {
+        profileName: activeLocalUser,
+        protein: localData.protein,
+        carbs: localData.carbs,
+        calories: localData.calories,
+        lastUpdated: new Date().toISOString()
+      }, { merge: true });
+      syncStatusDiv.innerText = "✅ Macros pushed to cloud!";
+      setTimeout(() => { if(syncStatusDiv.innerText.includes("pushed")) syncStatusDiv.innerText = "☁️ Sync ready"; }, 2000);
+    } catch(e) { syncStatusDiv.innerText = "❌ Push failed: " + e.message; }
+  }
+
+  async function pullCloudToLocal() {
+    if (!currentFirebaseUser) { syncStatusDiv.innerText = "🔐 Login to pull cloud data."; return; }
+    try {
+      const userDocRef = doc(db, "macroUsers", currentFirebaseUser.uid);
+      const snap = await getDoc(userDocRef);
+      if (snap.exists()) {
+        const cloudData = snap.data();
+        const cloudProfile = cloudData.profileName || "cloud_user";
+        if (!macroData[cloudProfile]) macroData[cloudProfile] = { protein:0, carbs:0, calories:0 };
+        macroData[cloudProfile] = {
+          protein: cloudData.protein || 0,
+          carbs: cloudData.carbs || 0,
+          calories: cloudData.calories || 0
+        };
+        saveLocalData();
+        setActiveUser(cloudProfile);
+        syncStatusDiv.innerText = "☁️ Cloud data loaded & active.";
+      } else {
+        syncStatusDiv.innerText = "☁️ No cloud data yet, push first.";
+      }
+    } catch(e) { syncStatusDiv.innerText = "Pull error: " + e.message; }
+  }
+
+  function subscribeToCloud() {
+    if (syncUnsubscribe) syncUnsubscribe();
+    if (!currentFirebaseUser) return;
+    const docRef = doc(db, "macroUsers", currentFirebaseUser.uid);
+    syncUnsubscribe = onSnapshot(docRef, () => {
+      if (activeLocalUser) syncStatusDiv.innerText = "☁️ Cloud snapshot ready (pull to sync)";
+    }, (err) => { console.warn(err); });
+  }
+
+  function initFirebaseAndAuth() {
+    try {
+      app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      db = getFirestore(app);
+      cloudReady = true;
+      onAuthStateChanged(auth, async (user) => {
+        currentFirebaseUser = user;
+        if (user) {
+          authDisplaySpan.innerText = `${user.isAnonymous ? "Anonymous" : (user.email || "Google")}`;
+          syncStatusDiv.innerText = "☁️ Cloud ready. Use Pull/Push.";
+          subscribeToCloud();
+        } else {
+          currentFirebaseUser = null;
+          authDisplaySpan.innerText = "Offline mode";
+          syncStatusDiv.innerText = "⚡ Login to enable cloud sync.";
+          if (syncUnsubscribe) syncUnsubscribe();
+        }
+      });
+    } catch (err) {
+      console.error("Firebase init failed", err);
+      syncStatusDiv.innerText = "⚠️ Firebase config missing – offline only";
+      cloudReady = false;
+    }
+  }
+
+  // ---------- EVENT LISTENERS ----------
+  document.getElementById("setLocalUserBtn").onclick = () => {
+    const name = document.getElementById("localNameInput").value.trim();
+    if (!name) return alert("Enter a name");
+    setActiveUser(name);
+    document.getElementById("localNameInput").value = "";
+  };
+  document.getElementById("searchFoodBtn").onclick = searchAndAddFood;
+  document.getElementById("resetTodayBtn").onclick = resetToday;
+  document.getElementById("manualSyncBtn").onclick = pullCloudToLocal;
+  document.getElementById("pushToCloudBtn").onclick = pushLocalToCloud;
+
+  document.getElementById("anonLoginBtn").onclick = async () => {
+    if (!cloudReady) return alert("Firebase not configured. Add your config.");
+    try { await signInAnonymously(auth); } catch(e) { alert("Anon login error: "+e.message); }
+  };
+  document.getElementById("googleLoginBtn").onclick = async () => {
+    if (!cloudReady) return alert("Firebase config missing.");
+    const provider = new GoogleAuthProvider();
+    try { await signInWithPopup(auth, provider); } catch(e) { alert(e.message); }
+  };
+  document.getElementById("logoutBtn").onclick = async () => {
+    if (auth) await signOut(auth);
+    currentFirebaseUser = null;
+    authDisplaySpan.innerText = "Offline mode";
+  };
+
+  // initial load
+  (function init() {
+    if (macroData && Object.keys(macroData).length === 0) macroData = { demo: { protein:0, carbs:0, calories:0 } };
+    if (!activeLocalUser && Object.keys(macroData).length) activeLocalUser = Object.keys(macroData)[0];
+    if (activeLocalUser) setActiveUser(activeLocalUser);
+    else { activeLocalUser = ""; updateUI(); }
+    initFirebaseAndAuth();
+  })();
+</script>
+</body>
+</html>
