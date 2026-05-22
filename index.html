@@ -265,25 +265,26 @@
       <button id="resetTodayBtn" class="btn-danger">🔄 Reset today's macros</button>
     </div>
   </div>
-  <footer>🥗 Food data from OpenFoodFacts (per 100g → scaled) • Firebase optional</footer>
+  <footer>🥗 Food data from OpenFoodFacts (per 100g → scaled) • Firebase sync enabled</footer>
 </div>
 
 <script type="module">
-  // ----------------------------- FIREBASE IMPORTS (same functionality, only style changed) -------------------------
+  // ----------------------------- FIREBASE IMPORTS -------------------------
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInAnonymously, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, doc, getDoc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  // ========== 🔧 REPLACE WITH YOUR FIREBASE CONFIG (if you want cloud sync) ==========
+  // ========== ✅ FIREBASE CONFIG (LIVE) ==========
   const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",           // <-- replace for cloud sync
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.appspot.com",
-    messagingSenderId: "123456789",
-    appId: "1:123456789:web:abcdef"
+    apiKey: "AIzaSyD5y62on9PNas1TZLMvkwYN4cQKCVoYLb0",
+    authDomain: "v5-macros-tracker.firebaseapp.com",
+    projectId: "v5-macros-tracker",
+    storageBucket: "v5-macros-tracker.firebasestorage.app",
+    messagingSenderId: "385180050839",
+    appId: "1:385180050839:web:ed1f346a3a800a8cf7d0d2",
+    measurementId: "G-C9WJ76NEBD"
   };
-  // ====================================================================================
+  // =====================================================
 
   let app, auth, db, syncUnsubscribe = null;
   let currentFirebaseUser = null;
@@ -485,7 +486,7 @@
       });
     } catch (err) {
       console.error("Firebase init failed", err);
-      syncStatusDiv.innerText = "⚠️ Firebase config missing – offline only";
+      syncStatusDiv.innerText = "⚠️ Firebase error – offline only";
       cloudReady = false;
     }
   }
@@ -503,11 +504,11 @@
   document.getElementById("pushToCloudBtn").onclick = pushLocalToCloud;
 
   document.getElementById("anonLoginBtn").onclick = async () => {
-    if (!cloudReady) return alert("Firebase not configured. Add your config.");
+    if (!cloudReady) return alert("Firebase not configured.");
     try { await signInAnonymously(auth); } catch(e) { alert("Anon login error: "+e.message); }
   };
   document.getElementById("googleLoginBtn").onclick = async () => {
-    if (!cloudReady) return alert("Firebase config missing.");
+    if (!cloudReady) return alert("Firebase not available.");
     const provider = new GoogleAuthProvider();
     try { await signInWithPopup(auth, provider); } catch(e) { alert(e.message); }
   };
