@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>💪 Macro Tracker V5 | Lean Bulk Assistant</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: radial-gradient(circle at 10% 20%, #0a0f1e, #03060c);
+      color: #f0f3f8;
+      text-align: center;
+      padding: 1rem;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      font-weight: 700;
+      font-size: 1.9rem;
+      background: linear-gradient(135deg, #E0F2FE, #00e6b8);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+      margin: 0.5rem 0 0.2rem 0;
+    }
+
+    .card {
+      background: rgba(28, 32, 44, 0.85);
+      backdrop-filter: blur(2px);
+      border: 1px solid rgba(72, 187, 120, 0.2);
+      padding: 1.25rem;
+      margin: 1.2rem 0;
+      border-radius: 28px;
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+      transition: transform 0.1s ease;
+    }
+
+    .card:hover {
+      border-color: rgba(0, 200, 150, 0.5);
+    }
+
+    input, button {
+      padding: 12px 16px;
+      margin: 8px 6px;
+      border-radius: 60px;
+      border: none;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+
+    input {
+      background: #1e2438;
+      border: 1px solid #2d3a5e;
+      color: white;
+      width: 200px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #00c896;
+      box-shadow: 0 0 0 2px rgba(0,200,150,0.3);
+    }
+
+    button {
+      background: #00c896;
+      color: #0a0f1e;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    button:active {
+      transform: scale(0.96);
+    }
+
+    .btn-secondary {
+      background: #2c3e66;
+      color: white;
+    }
+
+    .btn-reset {
+      background: #b91c1c;
+      color: white;
+    }
+
+    .macro-grid {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+
+    .macro-item {
+      background: #0b0f17;
+      flex: 1;
+      padding: 0.8rem;
+      border-radius: 24px;
+      border-left: 3px solid #00c896;
+    }
+
+    .macro-value {
+      font-size: 2rem;
+      font-weight: 800;
+      color: #00e6b8;
+    }
+
+    .status-badge {
+      background: #1e293b;
+      padding: 0.6rem;
+      border-radius: 40px;
+      font-weight: 500;
+      margin-top: 12px;
+    }
+
+    .msg {
+      font-size: 0.8rem;
+      margin-top: 8px;
+      padding: 6px;
+      border-radius: 40px;
+      background: #0f121e;
+      display: inline-block;
+    }
+
+    .flex-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .weight-input {
+      width: 100px;
+      text-align: center;
+    }
+
+    hr {
+      border-color: #2a2f42;
+      margin: 12px 0;
+    }
+
+    .current-user {
+      font-weight: bold;
+      color: #a5f0d1;
+      background: #0f1a1f;
+      display: inline-block;
+      padding: 5px 16px;
+      border-radius: 40px;
+      font-size: 0.9rem;
+    }
+
+    footer {
+      font-size: 0.7rem;
+      opacity: 0.6;
+      margin: 2rem 0 1rem;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>⚡ MACRO TRACKER V5</h1>
+  <p style="opacity:0.8;">smart lean bulk · per 100g scaling</p>
+
+  <!-- USER PANEL -->
+  <div class="card">
+    <h3>👤 Athlete Profile</h3>
+    <div class="flex-row">
+      <input id="username" placeholder="e.g., Alex, Maria" autocomplete="off">
+      <button onclick="saveUser()">✅ Save / Switch</button>
+    </div>
+    <div style="margin-top: 12px;">
+      <span class="current-user" id="currentUserDisplay">⚡ No active user</span>
+    </div>
+  </div>
+
+  <!-- FOOD LOGGER WITH GRAMS SCALING -->
+  <div class="card">
+    <h3>🍽️ Log Meal</h3>
+    <div class="flex-row">
+      <input id="foodInput" placeholder="food name (e.g., chicken breast, oats)" style="flex:2; min-width:150px;">
+      <input id="gramsInput" type="number" value="100" step="10" class="weight-input" placeholder="grams">
+      <span style="color:#b9c8ff;">g</span>
+    </div>
+    <div>
+      <button onclick="searchFood()">➕ Add to macros</button>
+    </div>
+    <div id="foodResult" class="msg"></div>
+    <div class="flex-row" style="margin-top: 6px;">
+      <small>🔍 OpenFoodFacts database • scales nutrition per 100g → your grams</small>
+    </div>
+  </div>
+
+  <!-- TODAY'S MACROS -->
+  <div class="card">
+    <h3>📅 Today's totals</h3>
+    <div class="macro-grid">
+      <div class="macro-item">
+        <div>🥩 PROTEIN</div>
+        <div class="macro-value"><span id="protein">0</span>g</div>
+      </div>
+      <div class="macro-item">
+        <div>🍚 CARBS</div>
+        <div class="macro-value"><span id="carbs">0</span>g</div>
+      </div>
+      <div class="macro-item">
+        <div>🔥 CALORIES</div>
+        <div class="macro-value"><span id="calories">0</span></div>
+      </div>
+    </div>
+    <div id="status" class="status-badge">⚙️ Select a user to start</div>
+    <hr>
+    <div class="flex-row">
+      <button onclick="resetTodayMacros()" class="btn-reset">🔄 Reset Today's Food</button>
+    </div>
+    <p style="font-size:12px; margin-top: 10px;">✔️ data saved locally • resets only current user</p>
+  </div>
+  <footer>Lean bulk feedback • real food API • grams adjustment</footer>
+</div>
+
+<script>
+  // ---------- STORAGE & GLOBAL STATE ----------
+  let macroDatabase = JSON.parse(localStorage.getItem("macroData")) || {};
+  let activeUser = localStorage.getItem("currentUser") || "";
+
+  // DOM elements
+  const proteinSpan = document.getElementById("protein");
+  const carbsSpan = document.getElementById("carbs");
+  const caloriesSpan = document.getElementById("calories");
+  const statusDiv = document.getElementById("status");
+  const currentUserDisplaySpan = document.getElementById("currentUserDisplay");
+  const foodResultDiv = document.getElementById("foodResult");
+  const foodInputField = document.getElementById("foodInput");
+  const gramsInputField = document.getElementById("gramsInput");
+  const usernameInput = document.getElementById("username");
+
+  // helper: ensure user entry in macroDatabase (avoid undefined errors)
+  function ensureUserData(user) {
+    if (!user) return false;
+    if (!macroDatabase[user]) {
+      macroDatabase[user] = { protein: 0, carbs: 0, calories: 0 };
+      saveDatabase();
+    }
+    return true;
+  }
+
+  // persist to localStorage
+  function saveDatabase() {
+    localStorage.setItem("macroData", JSON.stringify(macroDatabase));
+  }
+
+  // update UI (macros + status + user display)
+  function refreshUI() {
+    if (!activeUser) {
+      proteinSpan.innerText = "0";
+      carbsSpan.innerText = "0";
+      caloriesSpan.innerText = "0";
+      statusDiv.innerHTML = "👋 Please create / select user above";
+      currentUserDisplaySpan.innerHTML = "⚡ No active user";
+      return;
+    }
+
+    // ensure active user data exists (safety)
+    ensureUserData(activeUser);
+    const userData = macroDatabase[activeUser];
+    if (userData) {
+      proteinSpan.innerText = Math.floor(userData.protein);
+      carbsSpan.innerText = Math.floor(userData.carbs);
+      caloriesSpan.innerText = Math.floor(userData.calories);
+    } else {
+      proteinSpan.innerText = "0";
+      carbsSpan.innerText = "0";
+      caloriesSpan.innerText = "0";
+    }
+
+    // update display name
+    currentUserDisplaySpan.innerHTML = `👤 ${activeUser} • tracking`;
+
+    // Lean bulk PROTEIN FEEDBACK (target ~160g, adjustable)
+    const currentProtein = userData ? userData.protein : 0;
+    let feedbackMsg = "";
+    if (currentProtein < 140) feedbackMsg = "🔴 LOW PROTEIN - muscle recovery risk";
+    else if (currentProtein < 165) feedbackMsg = "🟡 APPROACHING TARGET - keep adding quality protein";
+    else if (currentProtein < 200) feedbackMsg = "🟢 OPTIMAL PROTEIN - great for lean bulk";
+    else feedbackMsg = "💪 HIGH PROTEIN - well done, watch balance";
+
+    // additional calorie tip (nice to have)
+    const caloriesToday = userData ? userData.calories : 0;
+    let calorieNote = "";
+    if (caloriesToday < 1800 && activeUser) calorieNote = " | ⚡ calories low for bulk";
+    else if (caloriesToday > 3000) calorieNote = " | 🔥 solid energy surplus";
+    else if (caloriesToday > 2100) calorieNote = " | ✅ good calorie zone";
+
+    statusDiv.innerHTML = `${feedbackMsg}${calorieNote}`;
+  }
+
+  // update macros for active user (internal)
+  function updateUserMacros(proteinDelta, carbsDelta, caloriesDelta) {
+    if (!activeUser) {
+      foodResultDiv.innerHTML = "❌ No active user. Please save your profile first.";
+      return false;
+    }
+    ensureUserData(activeUser);
+    const user = macroDatabase[activeUser];
+    // prevent negative values (just in case)
+    user.protein = Math.max(0, user.protein + proteinDelta);
+    user.carbs = Math.max(0, user.carbs + carbsDelta);
+    user.calories = Math.max(0, user.calories + caloriesDelta);
+    saveDatabase();
+    refreshUI();
+    return true;
+  }
+
+  // reset macros for current user
+  function resetTodayMacros() {
+    if (!activeUser) {
+      foodResultDiv.innerHTML = "⚠️ Select a user before resetting macros.";
+      return;
+    }
+    if (macroDatabase[activeUser]) {
+      macroDatabase[activeUser] = { protein: 0, carbs: 0, calories: 0 };
+      saveDatabase();
+      refreshUI();
+      foodResultDiv.innerHTML = "🗑️ Today's macros have been reset to zero.";
+      setTimeout(() => {
+        if (foodResultDiv.innerHTML.includes("reset to zero")) foodResultDiv.innerHTML = "";
+      }, 2000);
+    } else {
+      macroDatabase[activeUser] = { protein: 0, carbs: 0, calories: 0 };
+      saveDatabase();
+      refreshUI();
+    }
+  }
+
+  // Save / switch user
+  function saveUser() {
+    let rawName = usernameInput.value.trim();
+    if (rawName === "") {
+      alert("Please enter a name (e.g., John)");
+      return;
+    }
+    activeUser = rawName;
+    localStorage.setItem("currentUser", activeUser);
+    ensureUserData(activeUser);
+    refreshUI();
+    usernameInput.value = "";  // clean field for next input
+    foodResultDiv.innerHTML = `✅ Switched to ${activeUser}. Start logging meals!`;
+    setTimeout(() => {
+      if (foodResultDiv.innerHTML.includes("Switched to")) foodResultDiv.innerHTML = "";
+    }, 2200);
+  }
+
+  // ----- FOOD SEARCH + SCALING (GRAMS AWARE) -----
+  async function searchFood() {
+    // validation: active user must exist
+    if (!activeUser) {
+      foodResultDiv.innerHTML = "🚫 Create or select a user (top card) before adding food.";
+      return;
+    }
+
+    const query = foodInputField.value.trim();
+    if (query === "") {
+      foodResultDiv.innerHTML = "📝 Please enter a food name (e.g., 'salmon', 'rice').";
+      return;
+    }
+
+    let grams = parseFloat(gramsInputField.value);
+    if (isNaN(grams) || grams <= 0) {
+      foodResultDiv.innerHTML = "⚖️ Enter a valid grams (positive number, e.g., 150)";
+      return;
+    }
+    if (grams > 5000) {
+      foodResultDiv.innerHTML = "⚠️ Serving too large? Use reasonable grams (max 5000g).";
+      return;
+    }
+
+    // Loading state
+    const originalBtnText = "➕ Add to macros";
+    const addBtn = event?.target || document.querySelector('button[onclick="searchFood()"]');
+    if (addBtn) addBtn.innerText = "⏳ searching...";
+    foodResultDiv.innerHTML = "🔎 Searching OpenFoodFacts...";
+
+    try {
+      // encode query to prevent errors
+      const encodedQuery = encodeURIComponent(query);
+      const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodedQuery}&search_simple=1&action=process&json=1&page_size=5`;
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const data = await response.json();
+      if (!data.products || data.products.length === 0) {
+        foodResultDiv.innerHTML = `😞 No results for "${query}". Try 'chicken', 'banana' or specific brand.`;
+        if (addBtn) addBtn.innerText = originalBtnText;
+        return;
+      }
+
+      // pick first valid product with at least some nutrition data
+      let selectedProduct = null;
+      for (let i = 0; i < data.products.length; i++) {
+        const p = data.products[i];
+        if (p.nutriments && (p.nutriments.proteins_100g !== undefined || p.nutriments.energy_kcal_100g !== undefined)) {
+          selectedProduct = p;
+          break;
+        }
+      }
+      if (!selectedProduct) selectedProduct = data.products[0];
+
+      const nutriments = selectedProduct.nutriments || {};
+      // protein per 100g
+      let proteinPer100g = nutriments.proteins_100g ?? nutriments.proteins ?? 0;
+      let carbsPer100g = nutriments.carbohydrates_100g ?? nutriments.carbohydrates ?? 0;
+      let kcalPer100g = nutriments.energy_kcal_100g ?? nutriments.energy_kcal ?? nutriments.energy_value ?? 0;
+      
+      // fallback: some products use "energy" field in kJ? but we prefer kcal, robust check
+      if (!kcalPer100g && nutriments.energy) {
+        // energy may be in kJ, convert if appears large
+        if (typeof nutriments.energy === 'number' && nutriments.energy > 200) {
+          kcalPer100g = nutriments.energy / 4.184;
+        } else {
+          kcalPer100g = nutriments.energy;
+        }
+      }
+      
+      // final sanitize
+      proteinPer100g = Math.max(0, proteinPer100g || 0);
+      carbsPer100g = Math.max(0, carbsPer100g || 0);
+      kcalPer100g = Math.max(0, kcalPer100g || 0);
+
+      // scaling based on grams
+      const factor = grams / 100;
+      let addedProtein = proteinPer100g * factor;
+      let addedCarbs = carbsPer100g * factor;
+      let addedCalories = kcalPer100g * factor;
+
+      // round to 1 decimal for nicer display but store as numbers
+      addedProtein = Math.round(addedProtein * 10) / 10;
+      addedCarbs = Math.round(addedCarbs * 10) / 10;
+      addedCalories = Math.round(addedCalories);
+
+      // show product name preview (truncate if needed)
+      let productName = selectedProduct.product_name || selectedProduct.generic_name || query;
+      if (productName.length > 45) productName = productName.substring(0, 42) + "...";
+
+      // add to current user totals
+      const success = updateUserMacros(addedProtein, addedCarbs, addedCalories);
+      if (success) {
+        foodResultDiv.innerHTML = `✅ Logged: ${productName} (${grams}g) → +${addedProtein}g P · +${addedCarbs}g C · +${addedCalories} kcal`;
+        // clear food input but keep grams maybe (optional)
+        foodInputField.value = "";
+        // grams field stays as default 100 or previous for convenience
+        gramsInputField.value = "100";
+      } else {
+        foodResultDiv.innerHTML = "❌ Failed to add macros (user error)";
+      }
+    } catch (err) {
+      console.error(err);
+      foodResultDiv.innerHTML = "🌐 Network error or API limit. Please try again.";
+    } finally {
+      if (addBtn) addBtn.innerText = originalBtnText;
+      // auto-clear result message after 4 seconds, but keep if error remains? fine
+      setTimeout(() => {
+        if (foodResultDiv.innerHTML && !foodResultDiv.innerHTML.includes("Logging")) {
+          // optionally keep but only remove if not showing permanent error? Let's remove after long period
+          if (!foodResultDiv.innerHTML.includes("Select a user") && !foodResultDiv.innerHTML.includes("No active user"))
+          if (foodResultDiv.innerHTML !== "✅ Logged: ...") {
+            // we let message fade after extra delay but not critical
+          }
+        }
+      }, 5000);
+    }
+  }
+
+  // Additional safe reset if user clicks reset button while no user
+  // Also on page load: restore active user + validate data integrity
+  function initializeApp() {
+    if (activeUser && activeUser !== "") {
+      ensureUserData(activeUser);
+      refreshUI();
+    } else {
+      // if activeUser string empty, show empty UI
+      refreshUI();
+    }
+    // fix any legacy data that might be corrupted but not vital
+    for (let user in macroDatabase) {
+      if (macroDatabase[user] && (typeof macroDatabase[user].protein !== 'number')) {
+        macroDatabase[user] = { protein: 0, carbs: 0, calories: 0 };
+      }
+    }
+    saveDatabase();
+    // set default grams placeholder
+    if (gramsInputField) gramsInputField.value = "100";
+  }
+
+  // attach event for "Enter" key on food input (UX)
+  function bindEvents() {
+    const foodInputElem = document.getElementById("foodInput");
+    if (foodInputElem) {
+      foodInputElem.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          searchFood();
+        }
+      });
+    }
+    const usernameElem = document.getElementById("username");
+    if (usernameElem) {
+      usernameElem.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") saveUser();
+      });
+    }
+  }
+
+  // override window methods for global button calls (already defined)
+  window.saveUser = saveUser;
+  window.searchFood = searchFood;
+  window.resetTodayMacros = resetTodayMacros;
+
+  // call init
+  initializeApp();
+  bindEvents();
+
+  // small enhancement: handle potential missing data on user switch if refresh
+  window.addEventListener("storage", (e) => {
+    if (e.key === "macroData" || e.key === "currentUser") {
+      macroDatabase = JSON.parse(localStorage.getItem("macroData")) || {};
+      activeUser = localStorage.getItem("currentUser") || "";
+      ensureUserData(activeUser);
+      refreshUI();
+    }
+  });
+</script>
+</body>
+</html>
